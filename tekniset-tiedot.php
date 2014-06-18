@@ -82,7 +82,7 @@ body {
 
 <div class="container">
 	<div class="row">
-	<div class="col-md-4">
+	<div class="col-md-9">
 	<form name="tekniset-tiedot" class="form-search" method="get" action="" role="form">
 			<input type="text" name="merkki" placeholder="Merkki" class="form-control" autofocus>
 			<input type="text" name="malli" placeholder="Malli" class="form-control" autofocus >
@@ -94,8 +94,8 @@ body {
 </div>
 
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
+//error_reporting(E_ALL);
+//ini_set('display_errors', '1');
 
 // Config
 $page = "tekniset-tiedot.php";
@@ -144,9 +144,10 @@ if(isset($_GET['index'])) {
 #$file = $_SERVER['DOCUMENT_ROOT'] . "/dev/trafi_ajotekn_idx.sqlite";
 #$file = "trafi_ajotekn_idx.sqlite";
 $file = "trafi_ajotekn_idx_utf8.sqlite";
+$file = "trafi_ajotekn_koodisto_idx_utf8.sqlite";
 $db = new SQLite3($file) or die("Could not open database");
 
-$sql = 'SELECT * FROM tekniset_tiedot ';
+$sql = 'SELECT * FROM tekniset_tiedot_view ';
 $where = '';
 $total_sql = 'SELECT COUNT(*) as count FROM tekniset_tiedot ';
 
@@ -198,7 +199,7 @@ echo '<div class="table-responsive">';
 echo '<table class="table table-striped">';
 echo "<thead>";
 echo "<tr>";
-echo "<th>#</th><th>ajoneuvoluokka</th><th>ensirekisterointipvm</th><th>ajoneuvoryhma</th><th>ajoneuvonkaytto</th><th>kayttoonottopvm</th><th>vari</th><th>ovienLukumaara</th><th>korityyppi</th><th>ohjaamotyyppi</th><th>istumapaikkojenLkm</th><th>omamassa</th><th>teknSuurSallKokmassa</th><th>tieliikSuurSallKokmassa</th><th>ajonKokPituus</th><th>ajonLeveys</th><th>ajonKorkeus</th><th>kayttovoima</th><th>iskutilavuus</th><th>suurinNettoteho</th><th>sylintereidenLkm</th><th>ahdin</th><th>merkkiSelvakielinen</th><th>mallimerkinta</th><th>vaihteisto</th><th>vaihteidenLkm</th><th>kaupallinenNimi</th><th>voimanvalJaTehostamistapa</th><th>tyyppihyvaksyntanro</th><th>yksittaisKayttovoima</th><th>kunta</th><th>Co2</th><th>jarnro</th>";
+echo "<th>#</th><th>ajoneuvoluokka</th><th>ensirekisterointipvm</th><th>ajoneuvoryhma</th><th>ajoneuvonkaytto</th><th>kayttoonottopvm</th><th>vari</th><th>ovienLukumaara</th><th>korityyppi</th><th>ohjaamotyyppi</th><th>istumapaikkojenLkm</th><th>omamassa</th><th>teknSuurSallKokmassa</th><th>tieliikSuurSallKokmassa</th><th>ajonKokPituus</th><th>ajonLeveys</th><th>ajonKorkeus</th><th>kayttovoima</th><th>iskutilavuus</th><th>suurinNettoteho</th><th>sylintereidenLkm</th><th>ahdin</th><th>merkkiSelvakielinen</th><th>mallimerkinta</th><th>vaihteisto</th><th>vaihteidenLkm</th><th>kaupallinenNimi</th><th>voimanvalJaTehostamistapa</th><th>tyyppihyvaksyntanro</th><th>yksittaisKayttovoima</th><th>kunta</th><th>Co2</th>";
 echo "</tr>";
 echo "</thead>";
 echo "<tbody>";
