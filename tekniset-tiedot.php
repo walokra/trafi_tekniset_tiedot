@@ -1,5 +1,3 @@
-<?php //header('Content-type: text/html; charset=ISO-8859-15'); ?>
-
 <!DOCTYPE html>
 <html lang="fi">
 <head>
@@ -86,6 +84,9 @@ body {
 	<form name="tekniset-tiedot" class="form-search" method="get" action="" role="form">
 			<input type="text" name="merkki" placeholder="Merkki" class="form-control" autofocus>
 			<input type="text" name="malli" placeholder="Malli" class="form-control" autofocus >
+			<input type="text" name="kunta" placeholder="Kunta" class="form-control" autofocus >
+			<input type="text" name="kayttovoima" placeholder="Käyttövoima" class="form-control" autofocus >
+			<input type="text" name="ensirekisterointipvm" placeholder="Ensirekisterointipvm" class="form-control" autofocus >
 
 			<input type="submit" value="Hae" class="btn btn-primary">
 	</form>
@@ -99,6 +100,9 @@ body {
 
 // Config
 $page = "tekniset-tiedot.php";
+$file = "trafi_ajotekn_koodisto_utf8.sqlite";
+$taulu = "tekniset_tiedot_view";
+$search_url = $page.'?';
 $limit = 100; // how many rows to show
 
 // lasketaan sivun kasittelyyn kulunut aika
@@ -134,33 +138,43 @@ if(isset($_GET['malli'])) {
 	$malli = htmlspecialchars($_GET['malli']);
 } else $malli = "";
 
+if(isset($_GET['kunta'])) {
+    $kunta = htmlspecialchars($_GET['kunta']);
+} else $kunta = "";
+
+if(isset($_GET['ensirekisterointipvm'])) {
+	    $ensirekisterointipvm = htmlspecialchars($_GET['ensirekisterointipvm']);
+} else $ensirekisterointipvm = "";
+
+if(isset($_GET['kayttovoima'])) {
+	    $kayttovoima = htmlspecialchars($_GET['kayttovoima']);
+} else $kayttovoima = "";
+
 if(isset($_GET['index'])) {
     if (strlen($_GET['index']) > 5)
 	   	$val = substr($_GET['index'], 0, 5);
 	else $val = htmlspecialchars($_GET['index']);
 }
 
-
 #$file = $_SERVER['DOCUMENT_ROOT'] . "/dev/trafi_ajotekn_idx.sqlite";
-#$file = "trafi_ajotekn_idx.sqlite";
-$file = "trafi_ajotekn_idx_utf8.sqlite";
-$file = "trafi_ajotekn_koodisto_idx_utf8.sqlite";
+//$file = "trafi_ajotekn_idx_utf8.sqlite";
 $db = new SQLite3($file) or die("Could not open database");
 
-$sql = 'SELECT * FROM tekniset_tiedot_view ';
+$sql = 'SELECT * FROM ' .$taulu. ' ';
 $where = '';
-$total_sql = 'SELECT COUNT(*) as count FROM tekniset_tiedot ';
+$total_sql = 'SELECT COUNT(*) as count FROM ' .$taulu. ' ';
 
 $start = ($show - 1) * $limit;
 $limit_clause = ' LIMIT ' .$start. ',' .$limit;
 
 if (!isset($show)) $show=0;
 
-if ($merkki != "" && $malli != "") {
+if ($merkki != "" || $malli != "") {
 
 	if ($merkki != "") {
 		$merkki = quote_smart($merkki);
 		$where = $where . ' merkkiSelvakielinen LIKE :merkki';
+		$search_url = $search_url . 'merkki='.$merkki.'&amp;';
 	}
 
 	if ($malli != "") {
@@ -169,16 +183,51 @@ if ($merkki != "" && $malli != "") {
 			$where = $where . ' AND ';
 		}
 		$where = $where . 'kaupallinenNimi LIKE :malli';
+		$search_url = $search_url . 'malli='.$malli.'&amp;';
 	}
+
+	if ($kunta != "") {
+        $kunta = quote_smart($kunta);
+        if ($where != "") {
+            $where = $where . ' AND ';
+        }
+        $where = $where . 'kunta LIKE :kunta';
+		$search_url = $search_url . 'kunta='.$kunta.'&amp;';
+    }
+
+	if ($kayttovoima != "") {
+        $kayttovoima = quote_smart($kayttovoima);
+        if ($where != "") {
+            $where = $where . ' AND ';
+        }
+        $where = $where . 'kayttovoima LIKE :kayttovoima';
+        $search_url = $search_url . 'kayttovoima='.$kayttovoima.'&amp;';
+    }
+
+	if ($ensirekisterointipvm != "") {
+        $ensirekisterointipvm = quote_smart($ensirekisterointipvm);
+        if ($where != "") {
+            $where = $where . ' AND ';
+        }
+        $where = $where . 'ensirekisterointipvm LIKE :ensirekisterointipvm';
+        $search_url = $search_url . 'ensirekisterointipvm='.$ensirekisterointipvm.'&amp;';
+    }
+
 	$sql = $sql . ' WHERE ' . $where . $limit_clause; 
 	$total_sql = $total_sql . ' WHERE ' . $where;
 	
 	$stmt = $db->prepare($sql);
 	$stmt->bindValue(':merkki', $merkki, SQLITE3_TEXT);
 	$stmt->bindValue(':malli', $malli, SQLITE3_TEXT);
+	$stmt->bindValue(':kunta', $kunta, SQLITE3_TEXT);
+	$stmt->bindValue(':kayttovoima', $kayttovoima, SQLITE3_TEXT);
+	$stmt->bindValue(':ensirekisterointipvm', $ensirekisterointipvm, SQLITE3_TEXT);
 	$total_stmt = $db->prepare($total_sql);
 	$total_stmt->bindValue(':merkki', $merkki, SQLITE3_TEXT);
 	$total_stmt->bindValue(':malli', $malli, SQLITE3_TEXT);
+	$total_stmt->bindValue(':kunta', $kunta, SQLITE3_TEXT);
+	$total_stmt->bindValue(':kayttovoima', $kayttovoima, SQLITE3_TEXT);
+	$total_stmt->bindValue(':ensirekisterointipvm', $ensirekisterointipvm, SQLITE3_TEXT);
 } else {
 	$sql = $sql . $limit_clause;
 	$stmt = $db->prepare($sql);
@@ -212,7 +261,7 @@ while($obj = $result->fetchArray(SQLITE3_NUM)) {
 }
 echo "</tbody>";
 echo "<tfoot><tr>";
-echo '<td colspan="32">Rivejä: '.$total.'</td>';
+echo '<td colspan="31">Rivejä: '.$total.'</td>';
 echo "</tr></tfoot>";
 echo "</table>";
 echo "</div>";
@@ -231,9 +280,10 @@ $num_pages = ceil($total / $limit) - 1;
 $for = $current_page + 1;
 $back = $current_page - 1;
 
+
 echo '<div class="pagination">';
 if ($num_pages > 10) {
-	if ($current_page != 1 && $total > 10) echo '<a class="paginage" href="'.$page.'?show='.$back.'">edellinen</a>';
+	if ($current_page != 1 && $total > 10) echo '<a class="paginage" href="'.$search_url.'show='.$back.'">edellinen</a>';
 
 	$start_range = $current_page - floor($mid_range/2);
 	$end_range = $current_page + floor($mid_range/2);
@@ -253,21 +303,19 @@ if ($num_pages > 10) {
 
 		// loop through all pages. if first, last, or in range, display
         if($i==0 || $i==$num_pages || in_array($i,$range)){
-			if ($merkki != "" && $malli != "")
-	            print '<a href="'.$page.'?merkki='.$merkki.'&amp;malli='.$malli.'$amp;show='.$i.'"';
-	        else print '<a href="'.$page.'?show='.$i.'"';
+            print '<a href="'.$search_url.'show='.$i.'"';
 			if ($i == $current_page) echo ' class="current"';
      		echo '>'.$i.'</a>';
 		}
 		if($range[$mid_range-1] < $num_pages-1 && $i == $range[$mid_range-1]) echo " ... ";
 	}
-	if ($current_page != $num_pages && $total > 10) echo '<a class="paginate" href="'.$page.'?show='.$for.'">seuraava</a>';
+	if ($current_page != $num_pages && $total > 10) echo '<a class="paginate" href="'.$search_url.'show='.$for.'">seuraava</a>';
 }
 else {
 	for($i=1; $i<=$num_pages; $i++) {
     	if ($i == $current_page) 
 			echo '<a class="current" href="#">'.$i.'</a>';
-		else echo '<a href="'.$page.'?show='.$i.'">'.$i.'</a>';
+		else echo '<a href="'.$search_url.'show='.$i.'">'.$i.'</a>';
 	}
 }
 echo '</div>';
