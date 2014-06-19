@@ -99,7 +99,7 @@ body {
 //ini_set('display_errors', '1');
 
 // Config
-$page = "tekniset-tiedot.php";
+$page = "tekniset-tiedot";
 $file = "trafi_ajotekn_koodisto_utf8.sqlite";
 $taulu = "tekniset_tiedot_view";
 $search_url = $page.'?';
