@@ -275,7 +275,7 @@ unset($stmt);
 // Pagination
 $current_page = $show;
 $mid_range = 7;
-$num_pages = ceil($total / $limit) - 1;
+$num_pages = ceil($total / $limit);
 
 $for = $current_page + 1;
 $back = $current_page - 1;
