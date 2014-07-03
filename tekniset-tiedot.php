@@ -79,6 +79,11 @@ body {
 </div>
 
 <div class="container">
+	<h1>Suomalaisten tieliikennekäytössä olevien ajoneuvojen tiedot</h1>
+	<p>
+	Suomessa tieliikennekäytössä olevien ajoneuvojen rekisteröinti-, hyväksyntä- ja tekniset tiedot ajoneuvoluokista M1 ja M1G. 
+	Omistajaan viittaavia tietoja ei julkaista (rekisterinumero ja valmistenumero).
+	</p>
 	<div class="row">
 	<div class="col-md-9">
 	<form name="tekniset-tiedot" class="form-search" method="get" action="" role="form">
