@@ -2,7 +2,7 @@
 <html lang="fi">
 <head>
 	<meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta http-equiv="X-UA-Compatible" content="IE=10; IE=9; IE=8; IE=7; IE=EDGE" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Ajoneuvojen tekniset tiedot - TraFi Avoin data</title>
 
@@ -10,6 +10,7 @@
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
 	<style type="text/css">
+html,body{margin:0;padding:0;color:#000;background:#fff}
 html {
 	position: relative;
 	min-height: 100%;
@@ -58,11 +59,19 @@ body {
 	margin-top: 5px;
 }
 
-.table { font-size: 13px; line-height: 1.231; }
-
-.pagination a {
-	margin: 0 10px 0 10px;
+table {
+	border-spacing:0;
+	border-collapse:collapse;
 }
+thead {background-color: #fff;}
+
+.table-responsive {overflow:auto;}
+.table { font-size: 13px; line-height: 1.231;}
+
+.total {
+	padding: 10px 10px 0 10px;
+}
+.pagination {padding: 0 10px 0 10px;}
 .current {
 	font-weight: bold;
 }
@@ -266,10 +275,10 @@ while($obj = $result->fetchArray(SQLITE3_NUM)) {
 }
 echo "</tbody>";
 echo "<tfoot><tr>";
-echo '<td colspan="31">Rivejä: '.$total.'</td>';
 echo "</tr></tfoot>";
 echo "</table>";
 echo "</div>";
+echo '<div class="total">Rivejä: '.$total.'</div>';
 
 // all done
 // destroy database object
@@ -286,9 +295,9 @@ $for = $current_page + 1;
 $back = $current_page - 1;
 
 
-echo '<div class="pagination">';
+echo '<ul class="pagination">';
 if ($num_pages > 10) {
-	if ($current_page != 1 && $total > 10) echo '<a class="paginage" href="'.$search_url.'show='.$back.'">edellinen</a>';
+	if ($current_page != 1 && $total > 10) echo '<li><a class="paginage" href="'.$search_url.'show='.$back.'">edellinen</a></li>';
 
 	$start_range = $current_page - floor($mid_range/2);
 	$end_range = $current_page + floor($mid_range/2);
@@ -304,26 +313,26 @@ if ($num_pages > 10) {
     $range = range($start_range,$end_range);
 
 	for($i=1; $i<=$num_pages; $i++) {
-		if($range[0] > 2 && $i == $range[0]) echo " ... ";
+		if($range[0] > 2 && $i == $range[0]) echo "<li><a href='#'>...</a></li>";
 
 		// loop through all pages. if first, last, or in range, display
         if($i==0 || $i==$num_pages || in_array($i,$range)){
-            print '<a href="'.$search_url.'show='.$i.'"';
+            print '<li><a href="'.$search_url.'show='.$i.'"';
 			if ($i == $current_page) echo ' class="current"';
-     		echo '>'.$i.'</a>';
+     		echo '>'.$i.'</a></li>';
 		}
-		if($range[$mid_range-1] < $num_pages-1 && $i == $range[$mid_range-1]) echo " ... ";
+		if($range[$mid_range-1] < $num_pages-1 && $i == $range[$mid_range-1]) echo "<li><a href='#'>...</a></li>";
 	}
-	if ($current_page != $num_pages && $total > 10) echo '<a class="paginate" href="'.$search_url.'show='.$for.'">seuraava</a>';
+	if ($current_page != $num_pages && $total > 10) echo '<li><a class="paginate" href="'.$search_url.'show='.$for.'">seuraava</a></li>';
 }
 else {
 	for($i=1; $i<=$num_pages; $i++) {
     	if ($i == $current_page) 
-			echo '<a class="current" href="#">'.$i.'</a>';
-		else echo '<a href="'.$search_url.'show='.$i.'">'.$i.'</a>';
+			echo '<li><a class="current" href="#">'.$i.'</a></li>';
+		else echo '<li><a href="'.$search_url.'show='.$i.'">'.$i.'</a></li>';
 	}
 }
-echo '</div>';
+echo '</ul>';
 
 // how long it took
 $time_loppu=explode(" ", microtime());
@@ -340,10 +349,19 @@ $time=round($time, 3);
 		</div>
     </div>
 
-	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 	<script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-
-
+	<script src="//cdnjs.cloudflare.com/ajax/libs/floatthead/1.2.8/jquery.floatThead.min.js"></script>
+	<script type="text/javascript">
+	$(document).ready(function () {
+		var $table = $('table');
+		$table.floatThead();
+		//$(window).resize(function() {
+			$('.table-responsive').css('height', window.innerHeight - 360);
+			$('.table-responsive').css('width', window.innerWidt  -20);
+		//});
+	});
+	</script>
 	<?php include_once("analyticstracking.php") ?>
 </body>
 </html> 
