@@ -5,7 +5,9 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=10; IE=9; IE=8; IE=7; IE=EDGE" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Ajoneuvojen tekniset tiedot - TraFi Avoin data</title>
-
+	<meta name="description" content="Ajoneuvojen tekniset tiedot - TraFi Avoin data" />
+	<meta name="author" content="Toteutus: Marko Wallin; Avoin data: TraFi" />
+	
 	<!-- Bootstrap -->
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
@@ -344,7 +346,9 @@ $time=round($time, 3);
 
 	<div id="footer">
 		<div class="container">
-        	<p class="text-muted" style="float: left;">tehnyt <a href="https://twitter.com/walokra">@walokra</a>, avoin data: <a href="http://www.trafi.fi/palvelut/avoin_data">TraFi</a> (ladattu 17.6.2014), <a href="http://www.trafi.fi/palvelut/avoin_data/avoimen_datan_lisenssi">lisenssi</a></p>
+        	<p class="text-muted" style="float: left;">tehnyt <a href="https://twitter.com/walokra">@walokra</a>, 
+			avoin data: <a href="http://www.trafi.fi/tietopalvelut/avoin_data">TraFi</a> (ladattu 17.6.2014), 
+			<a href="http://www.trafi.fi/tietopalvelut/avoin_data/avoimen_datan_lisenssi">lisenssi</a></p>
 			<p class="text-muted" style="float: right; font-size: 0.7em;">Haku kesti: <?php echo '' .$time.' s'; ?></p>
 		</div>
     </div>
