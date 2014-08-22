@@ -172,8 +172,6 @@ if(isset($_GET['index'])) {
 	else $val = htmlspecialchars($_GET['index']);
 }
 
-#$file = $_SERVER['DOCUMENT_ROOT'] . "/dev/trafi_ajotekn_idx.sqlite";
-//$file = "trafi_ajotekn_idx_utf8.sqlite";
 $db = new SQLite3($file) or die("Could not open database");
 
 $sql = 'SELECT * FROM ' .$taulu. ' ';
@@ -361,7 +359,7 @@ $time=round($time, 3);
 		var $table = $('table');
 		$table.floatThead();
 		//$(window).resize(function() {
-			$('.table-responsive').css('height', window.innerHeight - 360);
+			$('.table-responsive').css('height', window.innerHeight - 370);
 			$('.table-responsive').css('width', window.innerWidt  -20);
 		//});
 	});
