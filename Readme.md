@@ -1,38 +1,33 @@
-# Haku TraFin Avoimen datan "ajoneuvojen tekniset tiedot" -aineistoon
+# Ajoneuvojen tekniset tiedot - TraFi Avoin data
 
-Yksinkertainen hakusivusto TraFin ajoneuvojen teknisiä tietoja sisältävään pilottiaineistoon.
+Yksinkertainen hakusivusto TraFin avoimen datan "ajoneuvojen tekniset tiedot" -pilottiaineistoon.
 
-## Data
+## TraFi avoin data 
 
-http://www.trafi.fi/palvelut/avoin_data
+Sovelluksessa käytetty data on saatavissa TraFin sivuilta: http://www.trafi.fi/tietopalvelut/avoin_data.
 
 ### Tietokanta
 
-tekniset_tiedot:
-sqlite> create table tekniset_tiedot (ajoneuvoluokka text, ensirekisterointipvm date, ajoneuvoryhma integer, ajoneuvonkaytto text, kayttoonottopvm date, vari integer, ovienLukumaara integer, korityyppi text, ohjaamotyyppi integer, istumapaikkojenLkm integer,  omamassa integer, teknSuurSallKokmassa integer, tieliikSuurSallKokmassa integer, ajonKokPituus integer, ajonLeveys integer, ajonKorkeus integer, kayttovoima text, iskutilavuus integer, suurinNettoteho integer, sylintereidenLkm integer, ahdin text, merkkiSelvakielinen text, mallimerkinta text, vaihteisto text, vaihteidenLkm integer, kaupallinenNimi integer, voimanvalJaTehostamistapa text, tyyppihyvaksyntanro text, yksittaisKayttovoima text, kunta text, Co2 integer, jarnro integer PRIMARY KEY ASC NOT NULL UNIQUE);
-sqlite> .separator "|"
-sqlite> .import data.csv tekniset_tiedot
-sqlite> CREATE INDEX merkkiSelvakielinen_idx ON tekniset_tiedot(merkkiSelvakielinen);
-sqlite> CREATE INDEX mallimerkinta_idx ON tekniset_tiedot(mallimerkinta);
+Ennen tietokantaan vientiä Excel-taulukkomuodossa olevaa dataa pitää hieman muokata. 1. Vaihdetaan kenttäerotin, koska datassa on desimaalilukuja. 2. Konvertoidaan UTF-8:ksi 3. Poistetaan ensimmäinen rivi, jossa on sarakkeiden nimet. Kenttäerotin on , joka vaihdetaan | -merkiksi, paitsi jos se on hipsujen sisällä.
 
-koodisto:
-sqlite> create table koodisto (id integer INTEGER PRIMARY KEY ASC NOT NULL UNIQUE, koodistonkuvaus string, koodintunnus string, lyhytselite string, pitkaselite string, kieli string);
-sqlite> .separator "|"
-sqlite> .import koodisto.csv koodisto
-sqlite> CREATE INDEX koodisto_idx ON koodisto(koodintunnus);
+1. awk 'BEGIN{FS=OFS="\""} {for (i=1;i<=NF;i+=2) gsub(/,/,"|",$i)}1' data.csv > data_clean.csv
+2. iconv -f iso8859-15 -t utf8 data_clean.csv > data_utf8.csv
+3. sed -i '1 d' data_utf8.csv
 
-tekniset_tiedot_view:
-sqlite> create view tekniset_tiedot_view as select jarnro, (select lyhytselite from koodisto where koodintunnus=ajoneuvoluokka and koodistonkuvaus="Direktiivien mukainen kooditus, jossa huomioitu myös kansalliset ajoneuvoluokat." and kieli="fi") as ajoneuvoluokka, ensirekisterointipvm, ajoneuvoryhma, ajoneuvonkaytto, kayttoonottopvm, (select lyhytselite from koodisto where koodintunnus=vari and koodistonkuvaus="Ajoneuvon väri" and kieli="fi") as vari, ovienLukumaara, (select lyhytselite from koodisto where koodintunnus=korityyppi and koodistonkuvaus LIKE "%Korityyppi" and kieli="fi") as korityyppi, (select lyhytselite from koodisto where koodintunnus=ohjaamotyyppi and koodistonkuvaus="%Ohjaamotyyppi" and kieli="fi") as ohjaamotyyppi, istumapaikkojenLkm, omamassa, teknSuurSallKokmassa, tieliikSuurSallKokmassa, ajonKokPituus, ajonLeveys, ajonKorkeus, (select lyhytselite from koodisto where koodintunnus=kayttovoima and koodistonkuvaus="Polttoaine" and kieli="fi") as kayttovoima, iskutilavuus, suurinNettoteho, sylintereidenLkm, ahdin, merkkiSelvakielinen, mallimerkinta, vaihteisto, vaihteidenLkm, kaupallinenNimi, (select lyhytselite from koodisto where koodintunnus=voimanvalJaTehostamistapa and koodistonkuvaus="Voimanvälitys ja tehostamistapa" and kieli="fi") as voimanvalJaTehostamistapa, tyyppihyvaksyntanro, yksittaisKayttovoima, (select lyhytselite from koodisto where koodintunnus=kunta and koodistonkuvaus="Kuntien numerot ja nimet" and kieli="fi") as kunta, Co2 from tekniset_tiedot;
+Kannan luonti ja avoimen datan importointi SQLiteen. Avataan kanta (sqlite3 trafi_ajotekn_utf8.sqlite), ja ajetaan seuraavat komennot:
+- sql/tekniset_tiedot.sql
+- sql/koodisto.sql
+- sql/tekniset_tiedot_view.sql
 
 ## Testisivu
 
-http://dataoksi.fi/lab/trafi/tekniset-tiedot.php
+http://dataoksi.fi/lab/trafi/tekniset-tiedot
 
 # Lisenssi
 
-sovellus: MIT
+Sovellus: MIT
 
-TraFin data: http://www.trafi.fi/palvelut/avoin_data/avoimen_datan_lisenssi
+TraFin data: http://www.trafi.fi/tietopalvelut/avoin_data/avoimen_datan_lisenssi
 
 # Tekijä
 
