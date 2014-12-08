@@ -1,3 +1,7 @@
+<?php 
+//error_reporting(E_ALL);
+//ini_set('display_errors', 1);
+?>
 <!DOCTYPE html>
 <html lang="fi">
 <head>
@@ -18,9 +22,12 @@ html {
 	min-height: 100%;
 }
 body {
-	padding-top: 50px;
+	padding-top: 20px;
 	/* Margin bottom by footer height */
 	margin-bottom: 30px;
+}
+h1 {
+	font-size: 1.4em;
 }
 #footer {
 	position: absolute;
@@ -37,7 +44,15 @@ body {
 .container .text-muted {
   margin: 5px 0;
 }
-
+.navbar {
+  min-height: 20px;
+  margin-bottom: 0;
+}
+.navbar-brand {
+  height: auto;
+  padding: 5px;
+  padding-left: 15px;
+}
 .form-search {
 	max-width: 960px;
 	padding: 15px;
@@ -84,7 +99,7 @@ thead {background-color: #fff;}
 <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
 	<div class="container">
 		<div class="navbar-header">
-			<a class="navbar-brand" href="http://dataoksi.fi/lab/trafi/tekniset-tiedot.php">Ajoneuvojen tekniset tiedot - TraFi Avoin data</a>
+			<a class="navbar-brand" href="http://dataoksi.fi/lab/trafi/tekniset-tiedot/">Ajoneuvojen tekniset tiedot - TraFi Avoin data</a>
 		</div>
 	</div>
 </div>
@@ -93,9 +108,7 @@ thead {background-color: #fff;}
 	<h1>Suomalaisten tieliikennekäytössä olevien ajoneuvojen tiedot</h1>
 	<p>
 	Suomessa tieliikennekäytössä olevien ajoneuvojen rekisteröinti-, hyväksyntä- ja tekniset tiedot ajoneuvoluokista M1 ja M1G. 
-	Omistajaan viittaavia tietoja ei julkaista (rekisterinumero ja valmistenumero).
-	</p>
-	<p>Hakukentissä voi käyttää % -merkkiä jokerimerkkinä.</p>
+	Omistajaan viittaavia tietoja ei julkaista (rekisterinumero ja valmistenumero). Hakukentissä voi käyttää % -merkkiä jokerimerkkinä.</p>
 	<div class="row">
 	<div class="col-md-9">
 	<form name="tekniset-tiedot" class="form-search" method="get" action="" role="form">
@@ -117,7 +130,7 @@ thead {background-color: #fff;}
 
 // Config
 $page = "tekniset-tiedot";
-$file = "trafi_ajotekn_koodisto_utf8.sqlite";
+#$file = "trafi_ajotekn_koodisto_utf8.sqlite";
 $taulu = "tekniset_tiedot_view";
 $search_url = $page.'?';
 $limit = 100; // how many rows to show
@@ -135,7 +148,8 @@ function quote_smart($value) {
  
 	// Quote if not integer
 	if (!is_numeric($value) || $value[0] == '0') {
-		$value = SQLite3::escapeString($value);
+		//$value = SQLite3::escapeString($value);
+		$value = pg_escape_string($value);
 	}
 	return $value;
 }
@@ -173,14 +187,22 @@ if(isset($_GET['index'])) {
 	else $val = htmlspecialchars($_GET['index']);
 }
 
-$db = new SQLite3($file) or die("Could not open database");
+try {
+	$db = new PDO('pgsql:host=localhost;dbname=ajoneuvotiedot;user=XXXXXX;password=XXXXXXX');
+	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	$db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+	//print_r($db->errorInfo());
+} catch(PDOException $e) {
+	echo $e->getMessage();
+	exit;
+}
 
 $sql = 'SELECT * FROM ' .$taulu. ' ';
 $where = '';
 $total_sql = 'SELECT COUNT(*) as count FROM ' .$taulu. ' ';
 
 $start = ($show - 1) * $limit;
-$limit_clause = ' LIMIT ' .$start. ',' .$limit;
+$limit_clause = ' OFFSET ' .$start. ' LIMIT ' .$limit;
 
 if (!isset($show)) $show=0;
 
@@ -232,31 +254,48 @@ if ($merkki != "" || $malli != "") {
 	$total_sql = $total_sql . ' WHERE ' . $where;
 	
 	$stmt = $db->prepare($sql);
-	$stmt->bindValue(':merkki', $merkki, SQLITE3_TEXT);
-	$stmt->bindValue(':malli', $malli, SQLITE3_TEXT);
-	$stmt->bindValue(':kunta', $kunta, SQLITE3_TEXT);
-	$stmt->bindValue(':kayttovoima', $kayttovoima, SQLITE3_TEXT);
-	$stmt->bindValue(':ensirekisterointipvm', $ensirekisterointipvm, SQLITE3_TEXT);
 	$total_stmt = $db->prepare($total_sql);
-	$total_stmt->bindValue(':merkki', $merkki, SQLITE3_TEXT);
-	$total_stmt->bindValue(':malli', $malli, SQLITE3_TEXT);
-	$total_stmt->bindValue(':kunta', $kunta, SQLITE3_TEXT);
-	$total_stmt->bindValue(':kayttovoima', $kayttovoima, SQLITE3_TEXT);
-	$total_stmt->bindValue(':ensirekisterointipvm', $ensirekisterointipvm, SQLITE3_TEXT);
+	if ($merkki != "") {
+		$stmt->bindValue(':merkki', $merkki, PDO::PARAM_STR);
+		$total_stmt->bindValue(':merkki', $merkki, PDO::PARAM_STR);
+	}
+	if ($malli != "") {
+		$stmt->bindValue(':malli', $malli, PDO::PARAM_STR);
+		$total_stmt->bindValue(':malli', $malli, PDO::PARAM_STR);
+	}
+	if ($kunta != "") {
+		$stmt->bindValue(':kunta', $kunta, PDO::PARAM_STR);
+		$total_stmt->bindValue(':kunta', $kunta, PDO::PARAM_STR);
+	}
+	if ($kayttovoima != "") {
+		$stmt->bindValue(':kayttovoima', $kayttovoima, PDO::PARAM_STR);
+		$total_stmt->bindValue(':kayttovoima', $kayttovoima, PDO::PARAM_STR);
+	}
+	if ($ensirekisterointipvm != "") {
+		$stmt->bindValue(':ensirekisterointipvm', $ensirekisterointipvm, PDO::PARAM_STR);
+		$total_stmt->bindValue(':ensirekisterointipvm', $ensirekisterointipvm, PDO::PARAM_STR);
+	}
 } else {
 	$sql = $sql . $limit_clause;
 	$stmt = $db->prepare($sql);
 	$total_stmt = $db->prepare($total_sql);
 }
 
-$total_result = $total_stmt->execute() or die("Error in query");
-$total_row = $total_result->fetchArray(SQLITE3_ASSOC);
-$total = $total_row['count'];
-if ($start > $total) {
-	$start = $total - $limit;
+try {
+	$total_stmt->execute(); //or die("Error in query")
+	$total_row = $total_stmt->fetchAll(PDO::FETCH_ASSOC); //PDO::FETCH_KEY_PAIR
+	//print_r($total_row);
+	$total = $total_row[0]['count'];
+	if ($start > $total) {
+		$start = $total - $limit;
+	}
+	//print_r($total_stmt->errorInfo());
+	
+	$result = $stmt->execute(); //or die("Error in query");
+	//print_r($stmt->errorInfo());
+} catch(PDOException $e) {
+	echo $e->getMessage();
 }
-
-$result = $stmt->execute() or die("Error in query");
 
 // print values
 echo '<div class="table-responsive">';
@@ -267,10 +306,10 @@ echo "<th>#</th><th>ajoneuvoluokka</th><th>ensirekisterointipvm</th><th>ajoneuvo
 echo "</tr>";
 echo "</thead>";
 echo "<tbody>";
-while($obj = $result->fetchArray(SQLITE3_NUM)) {
+foreach ($stmt->fetchAll() as $row) {
 	echo "<tr>";
-	for ($i=0; $i < $result->numColumns(); $i++) {
-		echo "<td>" . $obj[$i] . "</td>";
+	for ($i=0; $i < $stmt->columnCount(); $i++) {
+		echo "<td>" . $row[$i] . "</td>";
 	}
 	echo "</tr>";
 }
@@ -283,7 +322,9 @@ echo '<div class="total">Rivejä: '.$total.'</div>';
 
 // all done
 // destroy database object
-$db->close();
+$db = null;
+$stmt = null;
+$total_stmt = null;
 unset($db);
 unset($stmt);
 
@@ -294,7 +335,6 @@ $num_pages = ceil($total / $limit);
 
 $for = $current_page + 1;
 $back = $current_page - 1;
-
 
 echo '<ul class="pagination">';
 if ($num_pages > 10) {
@@ -346,7 +386,7 @@ $time=round($time, 3);
 	<div id="footer">
 		<div class="container">
         	<p class="text-muted" style="float: left;">tehnyt <a href="https://twitter.com/walokra">@walokra</a>, 
-			avoin data: <a href="http://www.trafi.fi/tietopalvelut/avoin_data">TraFi</a> (ladattu 17.6.2014), 
+			avoin data: <a href="http://www.trafi.fi/tietopalvelut/avoin_data">TraFi</a> (ladattu 15.9.2014), 
 			<a href="http://www.trafi.fi/tietopalvelut/avoin_data/avoimen_datan_lisenssi">lisenssi</a></p>
 			<p class="text-muted" style="float: right; font-size: 0.7em;">Haku kesti: <?php echo '' .$time.' s'; ?></p>
 		</div>
