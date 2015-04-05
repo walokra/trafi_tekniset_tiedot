@@ -128,7 +128,6 @@ thead {background-color: #fff;}
 
 // Config
 $page = "tekniset-tiedot";
-#$file = "trafi_ajotekn_koodisto_utf8.sqlite";
 $taulu = "tekniset_tiedot_mat_view";
 $search_url = $page.'?';
 $limit = 100; // how many rows to show
@@ -187,7 +186,7 @@ if(isset($_GET['index'])) {
 }
 
 try {
-	$db = new PDO('pgsql:host=localhost;dbname=ajoneuvotiedot;user=trafi;password=T1edotAj=n#uvost3n');
+	$db = new PDO('pgsql:host=localhost;dbname=ajoneuvotiedot;user=trafi;password=');
 	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	$db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 	//print_r($db->errorInfo());
