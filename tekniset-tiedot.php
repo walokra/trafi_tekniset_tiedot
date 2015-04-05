@@ -125,13 +125,11 @@ thead {background-color: #fff;}
 </div>
 
 <?php
-//error_reporting(E_ALL);
-//ini_set('display_errors', '1');
 
 // Config
 $page = "tekniset-tiedot";
 #$file = "trafi_ajotekn_koodisto_utf8.sqlite";
-$taulu = "tekniset_tiedot_view";
+$taulu = "tekniset_tiedot_mat_view";
 $search_url = $page.'?';
 $limit = 100; // how many rows to show
 
@@ -161,6 +159,7 @@ if(isset($_GET['show'])) {
 		$show = substr($_GET['show'], 0, 5);
 	else $show = htmlspecialchars($_GET['show']);
 } else $show = 1;
+
 if(isset($_GET['merkki'])) {
 	$merkki = htmlspecialchars($_GET['merkki']);
 } else $merkki = "";
@@ -188,7 +187,7 @@ if(isset($_GET['index'])) {
 }
 
 try {
-	$db = new PDO('pgsql:host=localhost;dbname=ajoneuvotiedot;user=XXXXXX;password=XXXXXXX');
+	$db = new PDO('pgsql:host=localhost;dbname=ajoneuvotiedot;user=trafi;password=T1edotAj=n#uvost3n');
 	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	$db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 	//print_r($db->errorInfo());
@@ -206,7 +205,7 @@ $limit_clause = ' OFFSET ' .$start. ' LIMIT ' .$limit;
 
 if (!isset($show)) $show=0;
 
-if ($merkki != "" || $malli != "") {
+if ($merkki != "" || $malli != "" || $kunta != "" || $ensirekisterointipvm != "" || $kayttovoima != "") {
 
 	if ($merkki != "") {
 		$merkki = quote_smart($merkki);
@@ -255,6 +254,7 @@ if ($merkki != "" || $malli != "") {
 	
 	$stmt = $db->prepare($sql);
 	$total_stmt = $db->prepare($total_sql);
+
 	if ($merkki != "") {
 		$stmt->bindValue(':merkki', $merkki, PDO::PARAM_STR);
 		$total_stmt->bindValue(':merkki', $merkki, PDO::PARAM_STR);
@@ -281,6 +281,8 @@ if ($merkki != "" || $malli != "") {
 	$total_stmt = $db->prepare($total_sql);
 }
 
+$total = 0;
+
 try {
 	$total_stmt->execute(); //or die("Error in query")
 	$total_row = $total_stmt->fetchAll(PDO::FETCH_ASSOC); //PDO::FETCH_KEY_PAIR
@@ -290,9 +292,11 @@ try {
 		$start = $total - $limit;
 	}
 	//print_r($total_stmt->errorInfo());
+	//print_r($total_stmt->debugDumpParams());
 	
 	$result = $stmt->execute(); //or die("Error in query");
 	//print_r($stmt->errorInfo());
+	//print_r($stmt->debugDumpParams());
 } catch(PDOException $e) {
 	echo $e->getMessage();
 }
