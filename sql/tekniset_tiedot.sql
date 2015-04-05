@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS tekniset_tiedot;
 
 CREATE TABLE tekniset_tiedot (
   ajoneuvoluokka varchar(255),
-  ensirekisterointipvm date,
+  ensirekisterointipvm varchar(255),
   ajoneuvoryhma integer,
   ajoneuvonkaytto varchar(255),
   kayttoonottopvm integer,
@@ -35,7 +35,5 @@ CREATE TABLE tekniset_tiedot (
 );
 
 CREATE INDEX merkkiSelvakielinen_idx ON tekniset_tiedot(merkkiSelvakielinen);
+
 CREATE INDEX mallimerkinta_idx ON tekniset_tiedot(mallimerkinta);
-
--- select column_name, data_type, character_maximum_length from INFORMATION_SCHEMA.COLUMNS where table_name = 'tekniset_tiedot';
-
