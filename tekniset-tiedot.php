@@ -186,7 +186,7 @@ if(isset($_GET['index'])) {
 }
 
 try {
-	$db = new PDO('pgsql:host=localhost;dbname=ajoneuvotiedot;user=trafi;password=');
+	$db = new PDO('pgsql:dbname=ajoneuvotiedot;user=trafi;password=');
 	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	$db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 	//print_r($db->errorInfo());
