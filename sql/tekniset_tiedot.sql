@@ -1,7 +1,38 @@
-create table tekniset_tiedot (ajoneuvoluokka text, ensirekisterointipvm varchar(255), ajoneuvoryhma integer, ajoneuvonkaytto text, kayttoonottopvm date, vari integer, ovienLukumaara integer, korityyppi text, ohjaamotyyppi integer, istumapaikkojenLkm integer,  omamassa integer, teknSuurSallKokmassa integer, tieliikSuurSallKokmassa integer, ajonKokPituus integer, ajonLeveys integer, ajonKorkeus integer, kayttovoima text, iskutilavuus integer, suurinNettoteho integer, sylintereidenLkm integer, ahdin text, merkkiSelvakielinen text, mallimerkinta text, vaihteisto text, vaihteidenLkm integer, kaupallinenNimi integer, voimanvalJaTehostamistapa text, tyyppihyvaksyntanro text, yksittaisKayttovoima text, kunta text, Co2 integer, jarnro integer PRIMARY KEY ASC NOT NULL UNIQUE);
+DROP TABLE IF EXISTS tekniset_tiedot;
 
-.separator "|"
-.import data.csv tekniset_tiedot
+CREATE TABLE tekniset_tiedot (
+  ajoneuvoluokka varchar(255),
+  ensirekisterointipvm varchar(255),
+  ajoneuvoryhma integer,
+  ajoneuvonkaytto varchar(255),
+  kayttoonottopvm integer,
+  vari varchar(255),
+  ovienLukumaara integer,
+  korityyppi varchar(255),
+  ohjaamotyyppi integer,
+  istumapaikkojenLkm integer,
+  omamassa integer,
+  teknSuurSallKokmassa integer,
+  tieliikSuurSallKokmassa integer,
+  ajonKokPituus integer,
+  ajonLeveys integer,
+  ajonKorkeus integer,
+  kayttovoima varchar(255),
+  iskutilavuus integer,
+  suurinNettoteho numeric,
+  sylintereidenLkm integer,
+  ahdin varchar(255),
+  merkkiSelvakielinen varchar(255),
+  mallimerkinta varchar(255),
+  vaihteisto varchar(255),
+  vaihteidenLkm integer,
+  kaupallinenNimi varchar(255),
+  voimanvalJaTehostamistapa varchar(255),
+  tyyppihyvaksyntanro varchar(255),
+  yksittaisKayttovoima varchar(255),
+  kunta varchar(255), Co2 integer,
+  jarnro BIGINT NOT NULL PRIMARY KEY UNIQUE
+);
 
 CREATE INDEX merkkiSelvakielinen_idx ON tekniset_tiedot(merkkiSelvakielinen);
 

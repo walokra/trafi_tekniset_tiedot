@@ -1,4 +1,4 @@
-drop view tekniset_tiedot_view;
+DROP VIEW IF EXISTS tekniset_tiedot_view;
 create view tekniset_tiedot_view as select jarnro, 
 	(select lyhytselite from koodisto where koodintunnus=ajoneuvoluokka and koodistonkuvaus='ajoneuvoluokka' and kieli='fi') as ajoneuvoluokka, 
 	ensirekisterointipvm, ajoneuvoryhma, ajoneuvonkaytto, kayttoonottopvm, 
@@ -14,7 +14,7 @@ create view tekniset_tiedot_view as select jarnro,
 	(select lyhytselite from koodisto where koodintunnus=kunta and koodistonkuvaus='Kuntien numerot ja nimet' and kieli='fi') as kunta, 
 	Co2 from tekniset_tiedot;
 
-drop materialized view tekniset_tiedot_mat_view;
+drop materialized view IF EXISTS tekniset_tiedot_mat_view;
 create view tekniset_tiedot_mat_view as select jarnro, 
 	(select lyhytselite from koodisto where koodintunnus=ajoneuvoluokka and koodistonkuvaus='ajoneuvoluokka' and kieli='fi') as ajoneuvoluokka, 
 	ensirekisterointipvm, ajoneuvoryhma, ajoneuvonkaytto, kayttoonottopvm, 

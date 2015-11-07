@@ -1,7 +1,5 @@
-create table koodisto (id integer INTEGER PRIMARY KEY ASC NOT NULL UNIQUE, koodistonkuvaus string, koodintunnus string, lyhytselite string, pitkaselite string, kieli string);
+DROP TABLE IF EXISTS koodisto;
 
-.separator "|"
-
-.import koodisto.csv koodisto
-
+create table koodisto (id BIGINT NOT NULL PRIMARY KEY UNIQUE, koodistonkuvaus varchar(255), koodintunnus varchar(255), lyhytselite varchar(255), pitkaselite varchar(1000), kieli varchar(255));
+	
 CREATE INDEX koodisto_idx ON koodisto(koodintunnus);
